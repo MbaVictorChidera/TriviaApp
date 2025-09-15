@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Trivia App</title>
+  </head>
+  <body>
+    <h1>Trivia Quiz App</h1>
+    <div class="question">
+      <% content.forEach((item) => { %>
+      <h3 class="question_head"><%- item.question %></h3>
+      <ul class="question_options">
+        <% item.options.map((option) => { %>
+        <li><%- option %></li>
+        <% }) %>
+      </ul>
+      <%}); %>
+    </div>
+  </body>
+</html>
