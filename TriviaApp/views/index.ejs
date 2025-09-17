@@ -1,19 +1,31 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Trivia App</title>
-  </head>
-  <body>
-    <h1>Trivia Quiz App</h1>
-    <div class="question">
-      <% content.forEach((item) => { %>
-      <h3 class="question_head"><%- item.question %></h3>
+<%- include("./partials/header.ejs") %>
+
+
+<div class="question">
+  <form id="quizForm" action="/submit-answers" method= "POST">
+  <% content.forEach((item, index) => { %>
+    <div class="question_block">
+      <h4 class="question_head">Q<%= index+1 %>: <%- item.question %></h4>
       <ul class="question_options">
-        <% item.options.map((option) => { %>
-        <li><%- option %></li>
+        <% item.options.forEach((option) => { %>
+          <li>
+            <label>
+              <input 
+                type="radio" 
+                name="question_<%= index %>" 
+                value="<%- option %>" 
+                required
+              >
+              <%- option %>
+            </label>
+          </li>
         <% }) %>
       </ul>
-      <%}); %>
     </div>
-  </body>
-</html>
+  <% }) %>
+
+  <button type="submit">Submit</button>
+</form>
+</div>
+
+<%- include("./partials/footer.ejs") %>

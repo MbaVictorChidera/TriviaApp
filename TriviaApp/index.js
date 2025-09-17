@@ -9,6 +9,9 @@ const baseURL =
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.static("public"));
+
+
 // 🔹 Shuffle helper function (Fisher–Yates)
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -39,6 +42,11 @@ app.get("/", async (req, res) => {
     res.status(404).send(error.message);
   }
 });
+
+app.post("/submit-answers", (req, res)=>{
+  console.log(req.body);
+  const answers = req.body;
+})
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);
