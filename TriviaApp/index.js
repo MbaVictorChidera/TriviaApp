@@ -21,11 +21,13 @@ function shuffle(array) {
   return array;
 }
 
+let question = [];
+
 app.get("/", async (req, res) => {
   try {
     const result = await axios.get(baseURL);
 
-    const processedData = result.data.results.map((item) => {
+    question = result.data.results.map((item) => {
       // Combine correct + incorrect answers
       const options = shuffle([...item.incorrect_answers, item.correct_answer]);
 
@@ -35,17 +37,37 @@ app.get("/", async (req, res) => {
       };
     });
 
-    console.log(processedData[0]);
+    console.log(question[0]);
 
-    res.render("index.ejs", { content: processedData });
+    res.render("index.ejs", { content: question });
   } catch (error) {
     res.status(404).send(error.message);
   }
 });
 
 app.post("/submit-answers", (req, res)=>{
-  console.log(req.body);
-  const answers = req.body;
+  // console.log(req.body);
+  const userAnswers = req.body;
+
+  let score = 0;
+
+  question.forEach((item, index) => {
+    const userAnswer = userAnswers[`q${index}`]
+    if(userAnswer === item.correct_answer){
+      // console.log("correct answer");
+      score++;
+    }
+
+    
+  })
+
+
+  const percentage = score / (question.length) * 100;
+
+  res.render("submit.ejs", { answers: userAnswers, score: score,
+    total: question.length,
+    percentage:percentage,
+    question: question});
 })
 
 app.listen(port, () => {
