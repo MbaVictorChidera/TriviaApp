@@ -1,28 +1,41 @@
 <%- include("./partials/header.ejs") %>
+    <div class="result container-fluid">
+        <div class="circle" style="border-color: <%= colorCode %>">
+            <h1 style="color: <%= colorCode %>">
+                <%- grade %>
+            </h1>
+        </div>
+        <h1 style="color: <%= colorCode %>">
+            <%= Number.isInteger(percentage || 0) ? ( percentage || 0 ) : ( percentage
+    || 0 ).toFixed(2) %>%
+        </h1>
+        <p class="comment" style="color: <%= colorCode %>">
+            <%- comment %>
+        </p>
 
-<h2>Submitted Answers</h2>
+        <p class="score">You got
+            <%= score %> out of
+                <%= total %> correct.</p>
 
-<h1>
-  <%= Number.isInteger(percentage) ? percentage : percentage.toFixed(2) %>%
-</h1>
-<p>You got <%= score %> out of <%= total %> correct.</p>
+        <ul>
+            <% question.forEach((q, i) => { const userAnswer = answers[`q${i}`]; const
+    isCorrect = userAnswer === q.correct_answer; %>
+                <li style="padding-bottom: 1em">
+                    <strong>Q<%= i+1 %>: </strong>
+                    <%- q.question %> <br />
 
-<ul>
-  <% question.forEach((q, i) => { 
-       const userAnswer = answers[`q${i}`];
-       const isCorrect = userAnswer === q.correct_answer;
-  %>
-    <li style="margin-bottom: 1em;">
-      <strong>Q<%= i+1 %>: </strong> <%- q.question %> <br>
+                        <% if (isCorrect) { %> ✅
+                            <span style="color: green">Your Answer: <%= userAnswer %></span>
+                            <% } else { %> ❌
+                                <span style="color: red">Your Answer: <%= userAnswer %></span><br /> ✅
+                                <span style="color: green">Correct Answer: <%= q.correct_answer %></span>
+                                <% } %>
+                </li>
+                <% }) %>
+        </ul>
+        <button type="submit" class="btn submit-btn" onclick="window.location.href='/'">
+    Take again
+  </button>
+    </div>
 
-      <% if (isCorrect) { %>
-        ✅ <span style="color: green;">Your Answer: <%= userAnswer %></span>
-      <% } else { %>
-        ❌ <span style="color: red;">Your Answer: <%= userAnswer %></span><br>
-        ✅ <span style="color: green;">Correct Answer: <%= q.correct_answer %></span>
-      <% } %>
-    </li>
-  <% }) %>
-</ul>
-
-<%- include("./partials/footer.ejs") %>
+    <%- include("./partials/footer.ejs") %>
