@@ -170,6 +170,7 @@ h1 {
     margin: auto;
     display: block;
     width: 20%;
+    min-width: 250px;
     padding: 0.5rem;
     border-radius: 30px;
     color: #fff;
