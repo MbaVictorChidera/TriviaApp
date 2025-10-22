@@ -1,9 +1,10 @@
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
+import serverless from "serverless-http";
 
 const app = express();
-const port = 3000;
+// const port = 3000;
 const baseURL =
     "https://opentdb.com/api.php?amount=20&category=27&difficulty=medium&type=multiple";
 
@@ -105,6 +106,10 @@ app.post("/submit-answers", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server started at ${port}`);
-});
+// app.listen(port, () => {
+//     console.log(`Server started at ${port}`);
+// });
+
+
+// Don't start a server here
+export const handler = serverless(app);
