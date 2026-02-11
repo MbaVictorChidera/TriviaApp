@@ -6,7 +6,7 @@ import session from "express-session";
 const app = express();
 const port = process.env.PORT||3000;
 const baseURL =
-    "https://opentdb.com/api.php?amount=30&category=27&difficulty=medium&type=multiple";
+    "https://opentdb.com/api.php?amount=25&category=27&difficulty=medium&type=multiple";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
