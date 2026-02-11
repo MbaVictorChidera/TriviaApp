@@ -1,15 +1,21 @@
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
+import session from "express-session";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT||3000;
 const baseURL =
-    "https://opentdb.com/api.php?amount=20&category=27&difficulty=medium&type=multiple";
+    "https://opentdb.com/api.php?amount=30&category=27&difficulty=medium&type=multiple";
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(session({
+    secret:"trivia-secret-key",
+    resave: false,
+    saveUninitialized: true,
+}));
 app.use(express.static("public"));
+
 
 // 🔹 Shuffle helper function (Fisher–Yates)
 function shuffle(array) {
@@ -20,13 +26,12 @@ function shuffle(array) {
     return array;
 }
 
-let question = [];
 
 app.get("/", async(req, res) => {
     try {
         const result = await axios.get(baseURL);
 
-        question = result.data.results.map((item) => {
+        const questions = result.data.results.map((item) => {
             // Combine correct + incorrect answers
             const options = shuffle([...item.incorrect_answers, item.correct_answer]);
 
@@ -37,8 +42,9 @@ app.get("/", async(req, res) => {
         });
 
         // console.log(question[0]);
+        req.session.questions = questions;
 
-        res.render("index.ejs", { content: question });
+        res.render("index.ejs", { content: questions });
     } catch (error) {
         res.status(404).send(error.message);
     }
@@ -46,11 +52,15 @@ app.get("/", async(req, res) => {
 
 app.post("/submit-answers", (req, res) => {
     // console.log(req.body);
+    if (!questions) {
+    return res.redirect("/");
+    }
     const userAnswers = req.body;
+    const questions = req.session.questions;
 
     let score = 0;
 
-    question.forEach((item, index) => {
+    questions.forEach((item, index) => {
         const userAnswer = userAnswers[`q${index}`];
         if (userAnswer === item.correct_answer) {
             // console.log("correct answer");
@@ -58,7 +68,7 @@ app.post("/submit-answers", (req, res) => {
         }
     });
 
-    const percentage = (score / question.length) * 100;
+    const percentage = (score / questions.length) * 100;
     let grade = "";
     let comment = "";
     let colorCode = "";
@@ -67,23 +77,23 @@ app.post("/submit-answers", (req, res) => {
         grade = "F";
         comment = " Fail, Better luck next time ";
         colorCode = "#e60101";
-    } else if (percentage <= 49 && percentage >= 40) {
+    } else if (percentage <= 49 ) {
         grade = "E";
         comment = " You can do better next time";
         colorCode = "#f77d03ff";
-    } else if (percentage <= 59 && percentage >= 50) {
+    } else if (percentage <= 59 ) {
         grade = "D";
         comment = "Nice try ";
         colorCode = "#f7ae03ff";
-    } else if (percentage <= 69 && percentage >= 60) {
+    } else if (percentage <= 69 ) {
         grade = "C";
         comment = "Good";
         colorCode = "#D3F16D";
-    } else if (percentage <= 79 && percentage >= 70) {
+    } else if (percentage <= 79 ) {
         grade = "B";
         comment = "Very Good";
         colorCode = "#03f70b";
-    } else if (percentage <= 100 && percentage >= 80) {
+    } else if (percentage <= 100) {
         grade = "A";
         comment = "Excellent";
         colorCode = "#10b315ff";
@@ -96,9 +106,9 @@ app.post("/submit-answers", (req, res) => {
     res.render("submit.ejs", {
         answers: userAnswers,
         score: score,
-        total: question.length,
+        total: questions.length,
         percentage: percentage,
-        question: question,
+        question: questions,
         grade: grade,
         comment: comment,
         colorCode: colorCode,
